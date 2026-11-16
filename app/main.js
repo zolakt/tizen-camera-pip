@@ -1096,7 +1096,10 @@ function restartPlayer() {
 
 function updateTitle() {
     var labelled = !view.lean;
-    title.textContent = (CFG.showName && !labelled) ? (currentCamera().name || '') : '';
+    // Optional add-on (caption.js): text that says why the app opened.
+    var extra = window.PipCaption ? window.PipCaption.text() : '';
+    title.textContent = extra ||
+        ((CFG.showName && !labelled) ? (currentCamera().name || '') : '');
     barDot.style.display = (CFG.showDot && !labelled) ? '' : 'none';
 }
 
@@ -1987,6 +1990,12 @@ function closeAppList() {
 function start() {
     quitting = false;
     launchedAt = new Date().getTime();
+    if (window.PipCaption) {
+        window.PipCaption.start(CFG, function () {
+            bar.style.display = '';
+            updateTitle();
+        }, log);
+    }
     view.enlarged = !!CFG.startEnlarged;
     view.corner = CFG.corner;
     actions.selected = 0;
